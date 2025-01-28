@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@theme{
+    --color-style:#199234;
+    --animation-trans:"[1s,250ms]";
+    --breakpoint-xs:30rem;
+}
