@@ -4,20 +4,36 @@ import InputField from "./inputField"
 
 
 interface InputState{
-  name:string;
+  title:string;
   price:number;
   description:string;
   category:string;
   submit:string;
 }
 const Add=()=>{
-  const [inputValue, setInputValue] = useState<InputState>({ name: "",price:0,description : "",category :"",submit:""});
-  const { name,price,description,category } = inputValue;
-  const handleChange = (inputValue:string) => {
-    setInputValue((prevState)=>({
-      ...prevState,
-      [name]: name==="price" ? parseFloat(inputValue) || 0 :inputValue
-    }))
+  const [inputValue, setInputValue] = useState<InputState>({title:"",price:0,description : "",category :"",submit:""});
+  const { title,price,description,category } = inputValue;
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const regexPatterns = {
+    title: /^[A-Za-z\s]+$/, 
+    price:/^(?:\d+|\d+\.\d{1,2})?$/, 
+    description: /^.{1,100}$/, 
+    category: /^[A-Za-z\s]+$/, 
+  };
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target; 
+
+    const regex = regexPatterns[name as keyof typeof regexPatterns];
+    if (regex && !regex.test(value)) {
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: `Invalid ${name}` }));
+      return;
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    }
+    setInputValue((prevState) => ({
+    ...prevState,
+    [name]: name === "price" ? parseFloat(value) || 0 : value, 
+  }));
   };
     return(
       <div >
@@ -29,11 +45,12 @@ const Add=()=>{
         <InputField
         type="text"
         name="title"
-        value={name}
+        value={title}
         placeholder="Title"
         label="Write Title"
         onChange={handleChange}
         />
+         {errors.title && <span className="text-red-500 mx-35">{errors.title}</span>}
         <InputField
         type="number"
         name="price"
@@ -42,6 +59,7 @@ const Add=()=>{
         label="Write Price"
         onChange={handleChange}
         />
+         {errors.price && <span className="text-red-500 mx-35">{errors.price}</span>}
          <InputField
         type="text"
         name="description"
@@ -50,6 +68,7 @@ const Add=()=>{
         label="Write Description"
         onChange={handleChange}
         />
+         {errors.description && <span className="text-red-500 mx-30">{errors.description}</span>}
          <InputField
         type="text"
         name="category"
@@ -58,6 +77,7 @@ const Add=()=>{
         label="Write Category"
         onChange={handleChange}
         />
+         {errors.category && <span className="text-red-500 mx-30">{errors.category}</span>}
 
         <InputField
         type="submit"
@@ -66,10 +86,10 @@ const Add=()=>{
         placeholder="Submit"
         onChange={handleChange}
         />
-         
+          
         
         </form>
-        
+      
       </div>
       
    
